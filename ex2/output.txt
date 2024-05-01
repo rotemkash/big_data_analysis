@@ -1,0 +1,564 @@
+ written and submitted by David Koplev 208870279 and Rotem Kashani 209073352
+C:\Users\Owner\AppData\Local\Programs\Python\Python39\python.exe C:\Users\Owner\Desktop\ex2\ex2.py 
+=======================================================
+Question: 1
+The query:
+
+SELECT COUNT(*) AS num_countries
+FROM Country
+
+Num of rows: 1
+The results:
+num_countries
+239
+
+=======================================================
+Question: 2
+The query:
+
+SELECT COUNT(*) AS num_countries_with_life_expectancy
+FROM Country
+WHERE LifeExpectancy IS NOT NULL
+
+Num of rows: 1
+The results:
+num_countries_with_life_expectancy
+222
+
+=======================================================
+Question: 3
+The query:
+
+SELECT COUNT(DISTINCT Continent) AS num_continents
+FROM Country
+
+Num of rows: 1
+The results:
+num_continents
+7
+
+=======================================================
+Question: 4
+The query:
+
+SELECT MAX(IndepYear) AS latest_indep_year
+FROM Country
+WHERE IndepYear IS NOT NULL
+
+Num of rows: 1
+The results:
+latest_indep_year
+1994
+
+=======================================================
+Question: 5
+The query:
+
+SELECT AVG(LifeExpectancy) AS avg_life_expectancy
+FROM Country
+WHERE LifeExpectancy IS NOT NULL
+
+Num of rows: 1
+The results:
+avg_life_expectancy
+66.486036036036
+
+=======================================================
+Question: 6
+The query:
+
+SELECT AVG(LifeExpectancy)
+FROM Country
+WHERE SurfaceArea > 1000000
+
+Num of rows: 1
+The results:
+AVG(LifeExpectancy)
+63.09333333333333
+
+=======================================================
+Question: 7
+The query:
+first way: 
+SELECT Name
+FROM Country
+WHERE SurfaceArea = (
+    SELECT MAX(SurfaceArea)
+    FROM Country)
+
+Num of rows: 1
+The results:
+Name
+Russian Federation
+
+=======================================================
+Question: 7
+The query:
+second way: 
+SELECT Name
+FROM Country
+ORDER BY SurfaceArea DESC
+LIMIT 1
+
+Num of rows: 1
+The results:
+Name
+Russian Federation
+
+=======================================================
+Question: 8
+The query:
+
+SELECT Name
+FROM Country
+ORDER BY SurfaceArea ASC
+LIMIT 1
+
+Num of rows: 1
+The results:
+Name
+Holy See (Vatican City State)
+
+=======================================================
+Question: 9
+The query:
+
+SELECT *
+FROM Country
+WHERE region = (
+    SELECT region
+    FROM Country
+    WHERE name = 'Armenia')
+ORDER BY population DESC
+
+Num of rows: 18
+The results:
+Code	Name	Continent	Region	SurfaceArea	IndepYear	Population	LifeExpectancy	GNP	GNPOld	LocalName	GovernmentForm	HeadOfState	Capital	Code2
+TUR	Turkey	Asia	Middle East	774815.0	1923	66591000	71.0	210721.0	189122.0	Türkiye	Republic	Ahmet Necdet Sezer	3358	TR
+IRQ	Iraq	Asia	Middle East	438317.0	1932	23115000	66.5	11500.0	None	Al-´Iraq	Republic	Saddam Hussein al-Takriti	1365	IQ
+SAU	Saudi Arabia	Asia	Middle East	2149690.0	1932	21607000	67.8	137635.0	146171.0	Al-´Arabiya as-Sa´udiya	Monarchy	Fahd ibn Abdul-Aziz al-Sa´ud	3173	SA
+YEM	Yemen	Asia	Middle East	527968.0	1918	18112000	59.8	6041.0	5729.0	Al-Yaman	Republic	Ali Abdallah Salih	1780	YE
+SYR	Syria	Asia	Middle East	185180.0	1941	16125000	68.5	65984.0	64926.0	Suriya	Republic	Bashar al-Assad	3250	SY
+...
+ARE	United Arab Emirates	Asia	Middle East	83600.0	1971	2441000	74.1	37966.0	36846.0	Al-Imarat al-´Arabiya al-Muttahida	Emirate Federation	Zayid bin Sultan al-Nahayan	65	AE
+KWT	Kuwait	Asia	Middle East	17818.0	1961	1972000	76.1	27037.0	30373.0	Al-Kuwayt	Constitutional Monarchy (Emirate)	Jabir al-Ahmad al-Jabir al-Sabah	2429	KW
+CYP	Cyprus	Asia	Middle East	9251.0	1960	754700	76.7	9333.0	8246.0	Kýpros/Kibris	Republic	Glafkos Klerides	2430	CY
+BHR	Bahrain	Asia	Middle East	694.0	1971	617000	73.0	6366.0	6097.0	Al-Bahrayn	Monarchy (Emirate)	Hamad ibn Isa al-Khalifa	149	BH
+QAT	Qatar	Asia	Middle East	11000.0	1971	599000	72.4	9472.0	8920.0	Qatar	Monarchy	Hamad ibn Khalifa al-Thani	2973	QA
+
+=======================================================
+Question: 10
+The query:
+
+SELECT *
+FROM Country
+WHERE population < (
+    SELECT AVG(population)
+    FROM Country)
+ORDER BY population DESC
+LIMIT 10
+
+Num of rows: 10
+The results:
+Code	Name	Continent	Region	SurfaceArea	IndepYear	Population	LifeExpectancy	GNP	GNPOld	LocalName	GovernmentForm	HeadOfState	Capital	Code2
+UZB	Uzbekistan	Asia	Southern and Central Asia	447400.0	1991	24318000	63.7	14194.0	21300.0	Uzbekiston	Republic	Islam Karimov	3503	UZ
+VEN	Venezuela	South America	South America	912050.0	1811	24170000	73.1	95023.0	88434.0	Venezuela	Federal Republic	Hugo Chávez Frías	3539	VE
+PRK	North Korea	Asia	Eastern Asia	120538.0	1948	24039000	70.7	5332.0	None	Choson Minjujuui In´min Konghwaguk (Bukhan)	Socialistic Republic	Kim Jong-il	2318	KP
+NPL	Nepal	Asia	Southern and Central Asia	147181.0	1769	23930000	57.8	4768.0	4837.0	Nepal	Constitutional Monarchy	Gyanendra Bir Bikram	2729	NP
+IRQ	Iraq	Asia	Middle East	438317.0	1932	23115000	66.5	11500.0	None	Al-´Iraq	Republic	Saddam Hussein al-Takriti	1365	IQ
+AFG	Afghanistan	Asia	Southern and Central Asia	652090.0	1919	22720000	45.9	5976.0	None	Afganistan/Afqanestan	Islamic Emirate	Mohammad Omar	1	AF
+ROM	Romania	Europe	Eastern Europe	238391.0	1878	22455500	69.9	38158.0	34843.0	România	Republic	Ion Iliescu	3018	RO
+TWN	Taiwan	Asia	Eastern Asia	36188.0	1945	22256000	76.4	256254.0	263451.0	T’ai-wan	Republic	Chen Shui-bian	3263	TW
+MYS	Malaysia	Asia	Southeast Asia	329758.0	1957	22244000	70.8	69213.0	97884.0	Malaysia	Constitutional Monarchy, Federation	Salahuddin Abdul Aziz Shah Alhaj	2464	MY
+UGA	Uganda	Africa	Eastern Africa	241038.0	1962	21778000	42.9	6313.0	6887.0	Uganda	Republic	Yoweri Museveni	3425	UG
+
+=======================================================
+Question: 11
+The query:
+
+SELECT MAX(gnp) AS max_gnp, MIN(gnp) AS min_gnp
+FROM Country
+WHERE gnp != 0
+
+Num of rows: 1
+The results:
+max_gnp	min_gnp
+8510700.0	6.0
+
+=======================================================
+Question: 12
+The query:
+
+SELECT 'max_gnp' AS category, gnp AS val
+FROM (
+    SELECT *
+    FROM Country
+    WHERE gnp != 0
+    ORDER BY gnp DESC
+    LIMIT 1) 
+UNION 
+SELECT 'min_gnp' AS category, gnp AS val
+FROM (
+    SELECT *
+    FROM Country
+    WHERE gnp != 0
+    ORDER BY gnp ASC
+    LIMIT 1)
+
+Num of rows: 2
+The results:
+category	val
+max_gnp	8510700.0
+min_gnp	6.0
+
+=======================================================
+Question: 13
+The query:
+
+SELECT *
+FROM Country
+WHERE Population > 5* (
+    SELECT AVG(Population)
+    FROM Country AS c2
+    WHERE c2.Region = Country.Region
+)
+
+
+Num of rows: 11
+The results:
+Code	Name	Continent	Region	SurfaceArea	IndepYear	Population	LifeExpectancy	GNP	GNPOld	LocalName	GovernmentForm	HeadOfState	Capital	Code2
+BRA	Brazil	South America	South America	8547403.0	1822	170115000	62.9	776739.0	804108.0	Brasil	Federal Republic	Fernando Henrique Cardoso	211	BR
+DOM	Dominican Republic	North America	Caribbean	48511.0	1844	8495000	73.2	15846.0	15076.0	República Dominicana	Republic	Hipólito Mejía Domínguez	587	DO
+ETH	Ethiopia	Africa	Eastern Africa	1104300.0	-1000	62565000	45.2	6353.0	6180.0	YeItyop´iya	Republic	Negasso Gidada	756	ET
+HTI	Haiti	North America	Caribbean	27750.0	1804	8222000	49.2	3459.0	3107.0	Haïti/Dayti	Republic	Jean-Bertrand Aristide	929	HT
+IND	India	Asia	Southern and Central Asia	3287263.0	1947	1013662000	62.5	447114.0	430572.0	Bharat/India	Federal Republic	Kocheril Raman Narayanan	1109	IN
+...
+CHN	China	Asia	Eastern Asia	9572900.0	-1523	1277558000	71.4	982268.0	917719.0	Zhongquo	People'sRepublic	Jiang Zemin	1891	CN
+CUB	Cuba	North America	Caribbean	110861.0	1902	11201000	76.2	17843.0	18862.0	Cuba	Socialistic Republic	Fidel Castro Ruz	2413	CU
+MEX	Mexico	North America	Central America	1958201.0	1810	98881000	71.5	414972.0	401461.0	México	Federal Republic	Vicente Fox Quesada	2515	MX
+NGA	Nigeria	Africa	Western Africa	923768.0	1960	111506000	51.6	65707.0	58623.0	Nigeria	Federal Republic	Olusegun Obasanjo	2754	NG
+TUR	Turkey	Asia	Middle East	774815.0	1923	66591000	71.0	210721.0	189122.0	Türkiye	Republic	Ahmet Necdet Sezer	3358	TR
+
+=======================================================
+Question: 14
+The query:
+
+SELECT
+    (SELECT Population
+     FROM Country
+     WHERE Name = 'Israel') AS Israel_population,
+    ROUND((SELECT Population
+           FROM Country
+           WHERE Name = 'Israel') * 100.0 /
+          (SELECT SUM(Population)
+           FROM Country
+           WHERE Continent = (SELECT Continent
+                             FROM Country
+                             WHERE Name = 'Israel')), 2) AS Percentage_of_continent
+
+Num of rows: 1
+The results:
+Israel_population	Percentage_of_continent
+6217000	0.17
+
+=======================================================
+Question: 15
+The query:
+
+SELECT *
+FROM City
+WHERE CountryCode IN (
+    SELECT Code
+    FROM Country
+    WHERE IndepYear < 0)
+ORDER BY District, Name, CountryCode
+
+Num of rows: 618
+The results:
+ID	Name	CountryCode	District	Population
+756	Addis Abeba	ETH	Addis Abeba	2495000
+1668	Anjo	JPN	Aichi	153823
+1734	Handa	JPN	Aichi	108600
+1609	Ichinomiya	JPN	Aichi	270828
+1759	Inazawa	JPN	Aichi	98746
+...
+2096	Shaoxing	CHN	Zhejiang	179818
+1973	Wenzhou	CHN	Zhejiang	401871
+2118	Xiaoshan	CHN	Zhejiang	162930
+2199	Yuyao	CHN	Zhejiang	114065
+2129	Zhoushan	CHN	Zhejiang	156317
+
+=======================================================
+Question: 16
+The query:
+
+SELECT DISTINCT Language
+FROM CountryLanguage
+WHERE CountryCode IN (
+    SELECT Code
+    FROM Country
+    WHERE Continent = 'Europe')
+
+Num of rows: 62
+The results:
+Language
+Albaniana
+Greek
+Macedonian
+Catalan
+French
+...
+Mordva
+Tatar
+Udmur
+Czech and Moravian
+Ukrainian and Russian
+
+=======================================================
+Question: 17
+The query:
+
+SELECT DISTINCT Language
+FROM CountryLanguage
+WHERE CountryCode IN (
+    SELECT Code
+    FROM Country
+    WHERE Continent = 'Europe') 
+    AND Language IN (
+    SELECT DISTINCT Language
+    FROM CountryLanguage
+    WHERE CountryCode IN (
+        SELECT Code
+        FROM Country
+        WHERE Continent = 'Asia'))
+
+
+Num of rows: 11
+The results:
+Language
+Greek
+French
+Portuguese
+German
+Turkish
+...
+Russian
+Ukrainian
+English
+Kazakh
+Tatar
+
+=======================================================
+Question: 18
+The query:
+first way: 
+SELECT DISTINCT Language
+FROM CountryLanguage
+WHERE CountryCode IN (
+    SELECT Code
+    FROM Country
+    WHERE Continent = 'Antarctica'
+)
+UNION
+SELECT DISTINCT Language
+FROM CountryLanguage
+WHERE CountryCode IN (
+    SELECT Code
+    FROM Country
+    WHERE Continent = 'Oceania'
+)
+
+ORDER BY Language
+
+Num of rows: 43
+The results:
+Language
+Arabic
+Bislama
+Canton Chinese
+Carolinian
+Chamorro
+...
+Tuvalu
+Vietnamese
+Wallis
+Wolea
+Yap
+
+=======================================================
+Question: 18
+The query:
+second way: 
+SELECT DISTINCT Language
+FROM CountryLanguage
+WHERE CountryCode IN (
+    SELECT Code
+    FROM Country
+    WHERE Continent = 'Antarctica' OR Continent = 'Oceania'
+)
+ORDER BY Language
+
+Num of rows: 43
+The results:
+Language
+Arabic
+Bislama
+Canton Chinese
+Carolinian
+Chamorro
+...
+Tuvalu
+Vietnamese
+Wallis
+Wolea
+Yap
+
+=======================================================
+Question: 19
+The query:
+first way: 
+
+SELECT DISTINCT cl.Language
+FROM CountryLanguage cl
+LEFT JOIN Country c ON cl.CountryCode = c.Code
+WHERE c.Continent != 'Europe' OR c.Continent IS NULL
+ORDER BY cl.Language
+
+Num of rows: 414
+The results:
+Language
+Abhyasi
+Acholi
+Adja
+Afar
+Afrikaans
+...
+Zapotec
+Zenaga
+Zhuang
+Zulu
+[South]Mande
+
+=======================================================
+Question: 19
+The query:
+second way: 
+SELECT DISTINCT Language
+FROM CountryLanguage
+WHERE CountryCode NOT IN (
+    SELECT Code
+    FROM Country
+    WHERE Continent = 'Europe'
+)
+ORDER BY Language
+
+Num of rows: 414
+The results:
+Language
+Abhyasi
+Acholi
+Adja
+Afar
+Afrikaans
+...
+Zapotec
+Zenaga
+Zhuang
+Zulu
+[South]Mande
+
+=======================================================
+Question: 20
+The query:
+
+SELECT c.Name AS Country, ci.Name AS Capital
+FROM Country c
+JOIN City ci ON c.Capital = ci.ID
+
+Num of rows: 232
+The results:
+Country	Capital
+Afghanistan	Kabul
+Netherlands	Amsterdam
+Netherlands Antilles	Willemstad
+Albania	Tirana
+Algeria	Alger
+...
+Estonia	Tallinn
+United States	Washington
+Virgin Islands, U.S.	Charlotte Amalie
+Zimbabwe	Harare
+Palestine	Gaza
+
+=======================================================
+Question: 21
+The query:
+
+SELECT c.Name AS City, c.Population AS City_Population, co.Population AS Country_Population,
+       (c.Population * 100.0 / co.Population) AS Percentage
+FROM City c
+JOIN Country co ON c.CountryCode = co.Code
+WHERE (c.Population * 100.0 / co.Population) > 10
+
+
+Num of rows: 145
+The results:
+City	City_Population	Country_Population	Percentage
+Andorra la Vella	21189	78000	27.165384615384614
+Luanda	2022000	12878000	15.701195837863022
+South Hill	961	8000	12.0125
+Saint John´s	24000	68000	35.294117647058826
+Dubai	669181	2441000	27.41421548545678
+...
+Città del Vaticano	455	1000	45.5
+Tallinn	403981	1439200	28.069830461367427
+Charlotte Amalie	13000	93000	13.978494623655914
+Harare	1410000	11669000	12.083297626189047
+Gaza	353632	3101000	11.403805224121252
+
+=======================================================
+Question: 22
+The query:
+
+SELECT Name, SurfaceArea
+FROM Country
+ORDER BY SurfaceArea DESC
+LIMIT 1 OFFSET 3
+
+Num of rows: 1
+The results:
+Name	SurfaceArea
+China	9572900.0
+
+=======================================================
+Question: 23
+The query:
+
+SELECT
+    Name,
+    LifeExpectancy,
+    CASE
+        WHEN LifeExpectancy < 40 THEN 'LOW'
+        WHEN LifeExpectancy < 70 THEN 'MED'
+        ELSE 'HIGH'
+    END AS Life_Expectancy_Range
+FROM Country
+WHERE LifeExpectancy IS NOT NULL
+
+Num of rows: 222
+The results:
+Name	LifeExpectancy	Life_Expectancy_Range
+Afghanistan	45.9	MED
+Netherlands	78.3	HIGH
+Netherlands Antilles	74.7	HIGH
+Albania	71.6	HIGH
+Algeria	69.7	MED
+...
+Estonia	69.5	MED
+United States	77.1	HIGH
+Virgin Islands, U.S.	78.1	HIGH
+Zimbabwe	37.8	LOW
+Palestine	71.4	HIGH
+
+
+Process finished with exit code 0
