@@ -1,0 +1,678 @@
+written and submitted by David Koplev 208870279 and Rotem Kashani 209073352
+C:\Users\Owner\AppData\Local\Programs\Python\Python39\python.exe C:\Users\Owner\Desktop\ex3\ex3.py 
+=======================================================
+Question: 1
+The query:
+
+SELECT c1.Code as Country1, c2.Code as Country2
+FROM CountryLanguage cl1
+JOIN CountryLanguage cl2 ON cl1.Language = cl2.Language AND cl1.CountryCode != cl2.CountryCode
+JOIN Country c1 ON cl1.CountryCode = c1.Code
+JOIN Country c2 ON cl2.CountryCode = c2.Code 
+
+Num of rows: 9042
+The results:
+Country1	Country2
+ABW	ANT
+ABW	BEL
+ABW	CAN
+ABW	NLD
+ABW	AIA
+...
+ZWE	ZAF
+ZWE	MOZ
+ZWE	ZMB
+ZWE	BWA
+ZWE	MOZ
+
+=======================================================
+Question: 2
+The query:
+
+SELECT c.Name as CountryName
+FROM Country c
+JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+GROUP BY c.Code
+HAVING COUNT(DISTINCT cl.Language) > 3 
+
+Num of rows: 117
+The results:
+CountryName
+Aruba
+Afghanistan
+Angola
+Andorra
+Australia
+...
+Vietnam
+Yugoslavia
+South Africa
+Zambia
+Zimbabwe
+
+=======================================================
+Question: 3
+The query:
+
+SELECT COUNT(*) as NumOfCountries
+FROM (
+  SELECT c.Code
+  FROM Country c
+  JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+  GROUP BY c.Code
+  HAVING COUNT(DISTINCT cl.Language) > 3
+) AS temp
+
+Num of rows: 1
+The results:
+NumOfCountries
+117
+
+=======================================================
+Question: 4
+The query:
+
+SELECT COUNT(*) 
+FROM (
+  SELECT CountryCode
+  FROM CountryLanguage
+  WHERE IsOfficial = '1'
+  GROUP BY CountryCode
+  HAVING COUNT(DISTINCT Language) = 1
+) temp
+
+Num of rows: 1
+The results:
+COUNT(*)
+153
+
+=======================================================
+Question: 5
+The query:
+
+SELECT COUNT(*) AS "Num of countries with official languages"
+FROM Country AS c
+WHERE(SELECT COUNT(*) FILTER(WHERE c.Code = cl.CountryCode AND cl.IsOfficial = 0)
+      FROM CountryLanguage AS cl) = 0
+
+Num of rows: 1
+The results:
+Num of countries with official languages
+39
+
+=======================================================
+Question: 6
+The query:
+
+SELECT c.Name
+FROM Country c
+JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+WHERE cl.Language = 'Hebrew'
+GROUP BY c.Code, c.Name
+
+Num of rows: 2
+The results:
+Name
+Israel
+Palestine
+
+=======================================================
+Question: 7
+The query:
+
+SELECT c.Name as CountryName
+FROM Country c
+INNER JOIN CountryLanguage cl1 ON c.Code = cl1.CountryCode AND cl1.Language = 'Arabic'
+INNER JOIN CountryLanguage cl2 ON c.Code = cl2.CountryCode AND cl2.Language = 'English'
+GROUP BY c.Code, c.Name
+
+Num of rows: 5
+The results:
+CountryName
+Australia
+Bahrain
+Denmark
+Gibraltar
+Kuwait
+
+=======================================================
+Question: 8
+The query:
+
+SELECT DISTINCT c.Name
+FROM Country c
+JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+WHERE cl.Language IN ('Arabic', 'English')
+GROUP BY c.Code, c.Name
+
+Num of rows: 88
+The results:
+Name
+Aruba
+Anguilla
+Netherlands Antilles
+United Arab Emirates
+American Samoa
+...
+Vanuatu
+Samoa
+Yemen
+South Africa
+Zimbabwe
+
+=======================================================
+Question: 9
+The query:
+
+SELECT c.Name
+FROM Country c
+JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+GROUP BY c.Code, c.Name
+HAVING SUM(CASE WHEN cl.Language IN ('Arabic', 'English') THEN 0 ELSE 1 END) = 0
+   AND SUM(CASE WHEN cl.Language IN ('Arabic', 'English') THEN 1 ELSE 0 END) = 2
+
+Num of rows: 3
+The results:
+Name
+Bahrain
+Gibraltar
+Kuwait
+
+=======================================================
+Question: 10
+The query:
+
+SELECT c.Name
+FROM Country c
+JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+WHERE cl.Language IN ('Arabic', 'English')
+GROUP BY c.Code, c.Name
+HAVING SUM(CASE WHEN cl.Language = 'Arabic' THEN 1 ELSE 0 END) +
+       SUM(CASE WHEN cl.Language = 'English' THEN 1 ELSE 0 END) = 1
+ORDER BY c.Name 
+
+Num of rows: 83
+The results:
+Name
+Algeria
+American Samoa
+Anguilla
+Antigua and Barbuda
+Aruba
+...
+Virgin Islands, British
+Virgin Islands, U.S.
+Western Sahara
+Yemen
+Zimbabwe
+
+=======================================================
+Question: 11
+The query:
+
+SELECT c.Name
+FROM Country c
+WHERE c.Code NOT IN (
+    SELECT CountryCode
+    FROM CountryLanguage
+    WHERE Language = 'English'
+) 
+
+Num of rows: 179
+The results:
+Name
+Afghanistan
+Netherlands
+Albania
+Algeria
+Andorra
+...
+Bouvet Island
+British Indian Ocean Territory
+South Georgia and the South Sandwich Islands
+Heard Island and McDonald Islands
+French Southern territories
+
+=======================================================
+Question: 12
+The query:
+
+SELECT c.Name
+FROM Country c
+INNER JOIN CountryLanguage cl1 ON c.Code = cl1.CountryCode AND cl1.Language = 'Arabic'
+LEFT JOIN CountryLanguage cl2 ON c.Code = cl2.CountryCode AND cl2.Language = 'English'
+WHERE cl2.CountryCode IS NULL
+GROUP BY c.Code, c.Name
+
+Num of rows: 28
+The results:
+Name
+United Arab Emirates
+Belgium
+Djibouti
+Algeria
+Egypt
+...
+Syria
+Chad
+Tunisia
+Turkey
+Yemen
+
+=======================================================
+Question: 13
+The query:
+
+SELECT Language
+FROM CountryLanguage
+GROUP BY Language
+HAVING COUNT(DISTINCT CountryCode) >= 2 
+
+Num of rows: 134
+The results:
+Language
+Afar
+Afrikaans
+Aimará
+Akan
+Albaniana
+...
+Vietnamese
+Wolof
+Yalunka
+Zande
+Zulu
+
+=======================================================
+Question: 14
+The query:
+
+SELECT Language
+FROM CountryLanguage
+GROUP BY Language
+HAVING COUNT(DISTINCT CountryCode) = 2
+
+Num of rows: 59
+The results:
+Language
+Afar
+Afrikaans
+Akan
+Arawakan
+Asami
+...
+Tigrinja
+Tsonga
+Tswana
+Yalunka
+Zande
+
+=======================================================
+Question: 15
+The query:
+
+SELECT SUBSTR(Name, 1, 1) AS InitialLetter, COUNT(*) AS NumberOfCities
+FROM City
+GROUP BY InitialLetter
+ORDER BY InitialLetter 
+
+Num of rows: 36
+The results:
+InitialLetter	NumberOfCities
+A	223
+B	317
+C	279
+D	127
+E	72
+...
+Ç	2
+Ö	2
+Ú	1
+Ü	1
+Š	5
+
+=======================================================
+Question: 16
+The query:
+
+SELECT c.Name AS Country
+FROM Country c
+JOIN (
+    SELECT CountryCode
+    FROM CountryLanguage
+    GROUP BY CountryCode
+    HAVING COUNT(DISTINCT SUBSTR(Language, 1, 1)) = 1
+       AND COUNT(DISTINCT Language) > 1
+) cl ON c.Code = cl.CountryCode
+
+Num of rows: 6
+The results:
+Country
+Armenia
+Bahamas
+Comoros
+Dominica
+Croatia
+Tunisia
+
+=======================================================
+Question: 17
+The query:
+
+SELECT 
+    c.Name AS Country,
+    (
+        SELECT Language
+        FROM CountryLanguage cl
+        WHERE cl.CountryCode = c.Code
+        ORDER BY Percentage DESC, Language
+        LIMIT 1
+    ) AS Language
+FROM Country c 
+
+Num of rows: 239
+The results:
+Country	Language
+Afghanistan	Pashto
+Netherlands	Dutch
+Netherlands Antilles	Papiamento
+Albania	Albaniana
+Algeria	Arabic
+...
+British Indian Ocean Territory	None
+South Georgia and the South Sandwich Islands	None
+Heard Island and McDonald Islands	None
+French Southern territories	None
+United States Minor Outlying Islands	English
+
+=======================================================
+Question: 18
+The query:
+
+SELECT 
+    c.Name AS Country,
+    GROUP_CONCAT(cl.Language) AS OfficialLanguages
+FROM Country c
+LEFT JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+WHERE cl.IsOfficial = '1'
+GROUP BY c.Name
+
+Num of rows: 191
+The results:
+Country	OfficialLanguages
+Afghanistan	Pashto,Dari
+Albania	Albaniana
+Algeria	Arabic
+American Samoa	Samoan,English
+Andorra	Catalan
+...
+Virgin Islands, U.S.	English
+Western Sahara	Arabic
+Yemen	Arabic
+Yugoslavia	Serbo-Croatian
+Zimbabwe	English
+
+=======================================================
+Question: 19
+The query:
+
+SELECT 
+    c.Name AS Country,
+    COUNT(cl.Language) AS NumberOfLanguages
+FROM Country c
+LEFT JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+GROUP BY c.Name
+ORDER BY NumberOfLanguages DESC
+LIMIT 3
+
+Num of rows: 3
+The results:
+Country	NumberOfLanguages
+Angola	13
+United States	12
+Russian Federation	12
+
+=======================================================
+Question: 20
+The query:
+
+SELECT 
+    c.Name AS Country,
+    (c.SurfaceArea / total_area.ContinentArea) * 100 AS PercentageOfContinentArea
+FROM Country c
+JOIN (
+    SELECT 
+        Continent,
+        SUM(SurfaceArea) AS ContinentArea
+    FROM Country
+    GROUP BY Continent
+) AS total_area ON c.Continent = total_area.Continent
+
+Num of rows: 239
+The results:
+Country	PercentageOfContinentArea
+Afghanistan	2.045387214110722
+Netherlands	0.1801629518061848
+Netherlands Antilles	0.0033038096642214344
+Albania	0.12472486005211676
+Algeria	7.873425841932483
+...
+British Indian Ocean Territory	0.00025784802615848394
+South Georgia and the South Sandwich Islands	0.029721062912933735
+Heard Island and McDonald Islands	0.0027337590534827596
+French Southern territories	0.05924413770500242
+United States Minor Outlying Islands	0.00018682217121457998
+
+=======================================================
+Question: 21
+The query:
+
+SELECT AVG(num_languages) AS AverageNumberOfLanguages
+FROM (
+    SELECT COUNT(Language) AS num_languages
+    FROM CountryLanguage
+    GROUP BY CountryCode
+) AS language_counts
+
+Num of rows: 1
+The results:
+AverageNumberOfLanguages
+4.240343347639485
+
+=======================================================
+Question: 22
+The query:
+
+SELECT
+    -- (a) Number of countries that gained independence after 1950
+    (SELECT COUNT(*) FROM Country WHERE IndepYear > 1950) AS CountriesAfter1950,
+    
+    -- (b) Average life expectancy in Africa
+    (SELECT AVG(LifeExpectancy) FROM Country WHERE Continent = 'Africa') AS AvgLifeExpectancyInAfrica,
+    
+    -- (c) Difference between the population of the largest and smallest countries in Europe
+    (SELECT MAX(Population) - MIN(Population) FROM Country WHERE Continent = 'Europe') AS PopulationDifferenceEurope
+
+Num of rows: 1
+The results:
+CountriesAfter1950	AvgLifeExpectancyInAfrica	PopulationDifferenceEurope
+110	52.5719298245614	146933000
+
+=======================================================
+Question: 23
+The query:
+
+SELECT 
+    ci.Name AS City,
+    co.Name AS Country,
+    GROUP_CONCAT(cl.Language) AS Languages
+FROM 
+    City ci
+JOIN 
+    Country co ON ci.CountryCode = co.Code
+JOIN 
+    CountryLanguage cl ON ci.CountryCode = cl.CountryCode
+WHERE 
+    ci.Population > 500000
+GROUP BY 
+    ci.ID 
+
+Num of rows: 539
+The results:
+City	Country	Languages
+Kabul	Afghanistan	Balochi,Dari,Pashto,Turkmenian,Uzbek
+Amsterdam	Netherlands	Arabic,Dutch,Fries,Turkish
+Rotterdam	Netherlands	Arabic,Dutch,Fries,Turkish
+Alger	Algeria	Arabic,Berberi
+Oran	Algeria	Arabic,Berberi
+...
+Fort Worth	United States	Chinese,English,French,German,Italian,Japanese,Korean,Polish,Portuguese,Spanish,Tagalog,Vietnamese
+Portland	United States	Chinese,English,French,German,Italian,Japanese,Korean,Polish,Portuguese,Spanish,Tagalog,Vietnamese
+Oklahoma City	United States	Chinese,English,French,German,Italian,Japanese,Korean,Polish,Portuguese,Spanish,Tagalog,Vietnamese
+Harare	Zimbabwe	English,Ndebele,Nyanja,Shona
+Bulawayo	Zimbabwe	English,Ndebele,Nyanja,Shona
+
+=======================================================
+Question: 24
+The query:
+
+SELECT 
+    cl1.CountryCode AS Country1,
+    cl2.CountryCode AS Country2
+FROM 
+    CountryLanguage cl1
+JOIN 
+    CountryLanguage cl2 ON cl1.Language = cl2.Language
+WHERE 
+    cl1.CountryCode < cl2.CountryCode
+GROUP BY 
+    cl1.CountryCode, cl2.CountryCode
+HAVING 
+    COUNT(DISTINCT cl1.Language) >= 2
+
+Num of rows: 421
+The results:
+Country1	Country2
+ABW	ANT
+ABW	BLZ
+ABW	CAN
+ABW	PRI
+ABW	USA
+...
+USA	VIR
+USA	VNM
+USA	VUT
+VIR	VUT
+ZAF	ZWE
+
+=======================================================
+Question: 25
+The query:
+
+SELECT 
+    Name AS Country,
+    GNP as GNP_orig,
+    Numbers.Number AS v,
+    GNP * Numbers.Number AS GNP_new
+FROM 
+    Country
+CROSS JOIN (
+    SELECT 3 AS Number
+    UNION ALL
+    SELECT 11 AS Number
+    UNION ALL
+    SELECT 20 AS Number
+) AS Numbers
+
+Num of rows: 717
+The results:
+Country	GNP_orig	v	GNP_new
+Afghanistan	5976.0	3	17928.0
+Afghanistan	5976.0	11	65736.0
+Afghanistan	5976.0	20	119520.0
+Netherlands	371362.0	3	1114086.0
+Netherlands	371362.0	11	4084982.0
+...
+French Southern territories	0.0	11	0.0
+French Southern territories	0.0	20	0.0
+United States Minor Outlying Islands	0.0	3	0.0
+United States Minor Outlying Islands	0.0	11	0.0
+United States Minor Outlying Islands	0.0	20	0.0
+
+=======================================================
+Question: 26
+The query:
+
+WITH AggregatedPercentages AS (
+    SELECT 
+        CountryCode,
+        Language,
+        Percentage AS percent
+    FROM 
+        CountryLanguage
+    ORDER BY 
+        CountryCode, Percentage ASC
+)
+SELECT 
+    t1.CountryCode,
+    t1.Language,
+    t1.percent,
+    SUM(t2.percent) AS percent_agg_sum
+FROM 
+    AggregatedPercentages t1
+INNER JOIN 
+    AggregatedPercentages t2 ON t1.CountryCode = t2.CountryCode AND t1.percent >= t2.percent
+GROUP BY 
+    t1.CountryCode, t1.Language, t1.percent
+ORDER BY 
+    t1.CountryCode, percent_agg_sum, t1.Language 
+
+Num of rows: 988
+The results:
+CountryCode	Language	percent	percent_agg_sum
+ABW	Dutch	5.3	5.3
+ABW	Spanish	7.4	12.7
+ABW	English	9.5	22.2
+ABW	Papiamento	76.7	98.9
+AFG	Balochi	0.9	0.9
+...
+ZMB	Bemba	29.7	64.9
+ZWE	English	2.2	4.4
+ZWE	Nyanja	2.2	4.4
+ZWE	Ndebele	16.2	20.6
+ZWE	Shona	72.1	92.69999999999999
+
+=======================================================
+Question: 27
+The query:
+
+SELECT 
+    cl.CountryCode,
+    cl.Language,
+    cl.Percentage
+FROM 
+    CountryLanguage cl
+WHERE 
+    cl.Percentage = (
+        SELECT MAX(cl2.Percentage)
+        FROM CountryLanguage cl2
+        WHERE cl.CountryCode = cl2.CountryCode
+    )
+
+Num of rows: 241
+The results:
+CountryCode	Language	Percentage
+AFG	Pashto	52.4
+NLD	Dutch	95.6
+ANT	Papiamento	86.2
+ALB	Albaniana	97.9
+DZA	Arabic	86.0
+...
+CXR	English	0.0
+CCK	English	0.0
+NIU	English	0.0
+TKL	English	0.0
+WLF	Futuna	0.0
+
+
+Process finished with exit code 0
