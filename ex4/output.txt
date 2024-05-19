@@ -1,0 +1,520 @@
+written and submitted by David Koplev 208870279 and Rotem Kashani 209073352
+C:\Users\Owner\AppData\Local\Programs\Python\Python39\python.exe C:\Users\Owner\Desktop\ex4\ex4.py 
+=======================================================
+Question: 1
+The query:
+
+    SELECT
+c.Continent,
+c.Name AS Country,
+ROUND(c.SurfaceArea * 100.0 / SUM(c.SurfaceArea) OVER (PARTITION BY c.Continent), 2) AS PercentOfContinentArea
+FROM
+Country c
+ORDER BY
+c.Continent ASC,
+PercentOfContinentArea DESC
+    
+Num of rows: 239
+The results:
+Continent	Country	PercentOfContinentArea
+Africa	Sudan	8.28
+Africa	Algeria	7.87
+Africa	Congo, The Democratic Republic of the	7.75
+Africa	Libyan Arab Jamahiriya	5.82
+Africa	Chad	4.24
+...
+South America	Guyana	1.2
+South America	Uruguay	0.98
+South America	Suriname	0.91
+South America	French Guiana	0.5
+South America	Falkland Islands	0.07
+
+=======================================================
+Question: 2
+The query:
+
+    SELECT
+    c.Name AS City,
+    c.CountryCode,
+    c.Population,
+    CASE
+        WHEN c.Population > (
+            SELECT AVG(Population)
+            FROM City
+            WHERE CountryCode = c.CountryCode
+        ) THEN 'Above Average'
+        ELSE 'Below Average'
+    END AS PopulationStatus
+FROM
+    City c
+ORDER BY
+    c.CountryCode,
+    c.Population DESC
+    
+Num of rows: 4079
+The results:
+City	CountryCode	Population	PopulationStatus
+Oranjestad	ABW	29034	Below Average
+Kabul	AFG	1780000	Above Average
+Qandahar	AFG	237500	Below Average
+Herat	AFG	186800	Below Average
+Mazar-e-Sharif	AFG	127800	Below Average
+...
+Bulawayo	ZWE	621742	Above Average
+Chitungwiza	ZWE	274912	Below Average
+Mount Darwin	ZWE	164362	Below Average
+Mutare	ZWE	131367	Below Average
+Gweru	ZWE	128037	Below Average
+
+=======================================================
+Question: 3
+The query:
+
+    SELECT
+    DENSE_RANK() OVER (ORDER BY c.SurfaceArea DESC) AS RankBySurfaceArea,
+    c.*
+FROM
+    Country c
+ORDER BY
+    RankBySurfaceArea
+    
+Num of rows: 239
+The results:
+RankBySurfaceArea	Code	Name	Continent	Region	SurfaceArea	IndepYear	Population	LifeExpectancy	GNP	GNPOld	LocalName	GovernmentForm	HeadOfState	Capital	Code2
+1	RUS	Russian Federation	Europe	Eastern Europe	17075400.0	1991	146934000	67.2	276608.0	442989.0	Rossija	Federal Republic	Vladimir Putin	3580	RU
+2	ATA	Antarctica	Antarctica	Antarctica	13120000.0	None	0	None	0.0	None	-	Co-administrated		None	AQ
+3	CAN	Canada	North America	North America	9970610.0	1867	31147000	79.4	598862.0	625626.0	Canada	Constitutional Monarchy, Federation	Elisabeth II	1822	CA
+4	CHN	China	Asia	Eastern Asia	9572900.0	-1523	1277558000	71.4	982268.0	917719.0	Zhongquo	People'sRepublic	Jiang Zemin	1891	CN
+5	USA	United States	North America	North America	9363520.0	1776	278357000	77.1	8510700.0	8110900.0	United States	Federal Republic	George W. Bush	3813	US
+...
+234	CCK	Cocos (Keeling) Islands	Oceania	Australia and New Zealand	14.0	None	600	None	0.0	None	Cocos (Keeling) Islands	Territory of Australia	Elisabeth II	2317	CC
+235	TKL	Tokelau	Oceania	Polynesia	12.0	None	2000	None	0.0	None	Tokelau	Nonmetropolitan Territory of New Zealand	Elisabeth II	3333	TK
+236	GIB	Gibraltar	Europe	Southern Europe	6.0	None	25000	79.0	258.0	None	Gibraltar	Dependent Territory of the UK	Elisabeth II	915	GI
+237	MCO	Monaco	Europe	Western Europe	1.5	1861	34000	78.8	776.0	None	Monaco	Constitutional Monarchy	Rainier III	2695	MC
+238	VAT	Holy See (Vatican City State)	Europe	Southern Europe	0.4	1929	1000	None	9.0	None	Santa Sede/Città del Vaticano	Independent Church State	Johannes Paavali II	3538	VA
+
+=======================================================
+Question: 4
+The query:
+
+    SELECT
+  DENSE_RANK() OVER (ORDER BY IndepYear) AS GroupNum,
+  c.*
+FROM Country c
+ORDER BY GroupNum, Code
+    
+Num of rows: 239
+The results:
+GroupNum	Code	Name	Continent	Region	SurfaceArea	IndepYear	Population	LifeExpectancy	GNP	GNPOld	LocalName	GovernmentForm	HeadOfState	Capital	Code2
+1	ABW	Aruba	North America	Caribbean	193.0	None	103000	78.4	828.0	793.0	Aruba	Nonmetropolitan Territory of The Netherlands	Beatrix	129	AW
+1	AIA	Anguilla	North America	Caribbean	96.0	None	8000	76.1	63.2	None	Anguilla	Dependent Territory of the UK	Elisabeth II	62	AI
+1	ANT	Netherlands Antilles	North America	Caribbean	800.0	None	217000	74.7	1941.0	None	Nederlandse Antillen	Nonmetropolitan Territory of The Netherlands	Beatrix	33	AN
+1	ASM	American Samoa	Oceania	Polynesia	199.0	None	68000	75.1	334.0	None	Amerika Samoa	US Territory	George W. Bush	54	AS
+1	ATA	Antarctica	Antarctica	Antarctica	13120000.0	None	0	None	0.0	None	-	Co-administrated		None	AQ
+...
+87	BIH	Bosnia and Herzegovina	Europe	Southern Europe	51197.0	1992	3972000	71.5	2841.0	None	Bosna i Hercegovina	Federal Republic	Ante Jelavic	201	BA
+88	CZE	Czech Republic	Europe	Eastern Europe	78866.0	1993	10278100	74.5	55017.0	52037.0	¸esko	Republic	Václav Havel	3339	CZ
+88	ERI	Eritrea	Africa	Eastern Africa	117600.0	1993	3850000	55.8	650.0	755.0	Ertra	Republic	Isayas Afewerki [Isaias Afwerki]	652	ER
+88	SVK	Slovakia	Europe	Eastern Europe	49012.0	1993	5398700	73.7	20594.0	19452.0	Slovensko	Republic	Rudolf Schuster	3209	SK
+89	PLW	Palau	Oceania	Micronesia	459.0	1994	19000	68.6	105.0	None	Belau/Palau	Republic	Kuniwo Nakamura	2881	PW
+
+=======================================================
+Question: 5
+The query:
+
+    SELECT
+RANK() OVER (ORDER BY COUNT(ci.ID) DESC) AS CityRanking,
+  c.Code,
+  c.Name
+FROM Country c
+LEFT JOIN City ci ON c.Code = ci.CountryCode
+GROUP BY c.Code, c.Name, c.Continent, c.Region, c.Population
+ORDER BY CityRanking
+    
+Num of rows: 239
+The results:
+CityRanking	Code	Name
+1	CHN	China
+2	IND	India
+3	USA	United States
+4	BRA	Brazil
+5	JPN	Japan
+...
+233	BVT	Bouvet Island
+233	HMD	Heard Island and McDonald Islands
+233	IOT	British Indian Ocean Territory
+233	SGS	South Georgia and the South Sandwich Islands
+233	UMI	United States Minor Outlying Islands
+
+=======================================================
+Question: 6
+The query:
+
+    
+WITH PopulationSums AS (
+  SELECT
+    Code,
+    Name,
+    Population,
+    SUM(Population) OVER (ORDER BY Population DESC) AS RollingPopSum,
+    (SELECT SUM(Population) FROM Country) AS TotalWorldPop
+  FROM Country
+)
+SELECT
+  Code,
+  Name,
+  Population,
+  RollingPopSum,
+  ROUND(100.0 * RollingPopSum / TotalWorldPop, 2) AS PercentOfWorld
+FROM PopulationSums
+ORDER BY Population DESC
+    
+Num of rows: 239
+The results:
+Code	Name	Population	RollingPopSum	PercentOfWorld
+CHN	China	1277558000	1277558000	21.02
+IND	India	1013662000	2291220000	37.69
+USA	United States	278357000	2569577000	42.27
+IDN	Indonesia	212107000	2781684000	45.76
+BRA	Brazil	170115000	2951799000	48.56
+...
+IOT	British Indian Ocean Territory	0	6078749450	100.0
+SGS	South Georgia and the South Sandwich Islands	0	6078749450	100.0
+HMD	Heard Island and McDonald Islands	0	6078749450	100.0
+ATF	French Southern territories	0	6078749450	100.0
+UMI	United States Minor Outlying Islands	0	6078749450	100.0
+
+=======================================================
+Question: 7
+The query:
+
+    WITH WorldPopulation AS (
+    SELECT SUM(Population) AS TotalPopulation
+    FROM Country
+)
+SELECT COUNT(*) AS MinNumberOfCountries
+FROM (
+    SELECT c.Name, c.Population, 
+           SUM(c.Population) OVER (ORDER BY c.Population DESC) AS RunningTotal,
+           wp.TotalPopulation
+    FROM Country c
+    CROSS JOIN WorldPopulation wp
+) AS Subquery
+WHERE RunningTotal - Population <= TotalPopulation * 0.5
+    
+Num of rows: 1
+The results:
+MinNumberOfCountries
+6
+
+=======================================================
+Question: 8
+The query:
+
+    WITH WorldPopulation AS (
+    SELECT SUM(Population) AS TotalPopulation
+    FROM Country
+)
+SELECT Name, Population
+FROM (
+    SELECT c.Name, c.Population, 
+           SUM(c.Population) OVER (ORDER BY c.Population DESC) AS RunningTotal,
+           wp.TotalPopulation
+    FROM Country c
+    CROSS JOIN WorldPopulation wp
+) AS Subquery
+WHERE RunningTotal - Population <= TotalPopulation * 0.5
+    
+Num of rows: 6
+The results:
+Name	Population
+China	1277558000
+India	1013662000
+United States	278357000
+Indonesia	212107000
+Brazil	170115000
+Pakistan	156483000
+
+=======================================================
+Question: 9
+The query:
+
+    WITH CountryLanguages AS (
+SELECT
+c.Code,
+c.Name,
+cl.Language,
+cl.Percentage,
+RANK() OVER (PARTITION BY c.Code ORDER BY cl.Percentage DESC) AS LanguageRank
+FROM Country c
+LEFT JOIN CountryLanguage cl ON c.Code = cl.CountryCode
+)
+SELECT
+Code,
+Name,
+Language AS TopLanguage1,
+(SELECT Language
+FROM CountryLanguages cl2
+WHERE cl2.Code = cl1.Code
+AND cl2.LanguageRank = 2) AS TopLanguage2
+FROM CountryLanguages cl1
+WHERE LanguageRank = 1
+ORDER BY Code
+    
+Num of rows: 247
+The results:
+Code	Name	TopLanguage1	TopLanguage2
+ABW	Aruba	Papiamento	English
+AFG	Afghanistan	Pashto	Dari
+AGO	Angola	Ovimbundu	Mbundu
+AIA	Anguilla	English	None
+ALB	Albania	Albaniana	Greek
+...
+YEM	Yemen	Arabic	Soqutri
+YUG	Yugoslavia	Serbo-Croatian	Albaniana
+ZAF	South Africa	Zulu	Xhosa
+ZMB	Zambia	Bemba	Tongan
+ZWE	Zimbabwe	Shona	Ndebele
+
+=======================================================
+Question: 10
+The query:
+
+    WITH CityPopulation AS (
+SELECT
+c.ID,
+c.Name AS CityName,
+c.CountryCode,
+c.Population,
+c.District,
+RANK() OVER (PARTITION BY c.CountryCode ORDER BY c.Population DESC) AS CityRankInCountry,
+RANK() OVER (ORDER BY c.Population DESC) AS OverallCityRank
+FROM City c
+)
+SELECT
+CityRankInCountry,
+OverallCityRank,
+ID,
+CityName,
+CountryCode,
+District,
+Population
+FROM CityPopulation
+ORDER BY ID
+    
+Num of rows: 4079
+The results:
+CityRankInCountry	OverallCityRank	ID	CityName	CountryCode	District	Population
+1	108	1	Kabul	AFG	Kabol	1780000
+2	1384	2	Qandahar	AFG	Qandahar	237500
+3	1793	3	Herat	AFG	Herat	186800
+4	2689	4	Mazar-e-Sharif	AFG	Balkh	127800
+1	337	5	Amsterdam	NLD	Noord-Holland	731200
+...
+2	2841	4075	Khan Yunis	PSE	Khan Yunis	123175
+3	2938	4076	Hebron	PSE	Hebron	119401
+4	3086	4077	Jabaliya	PSE	North Gaza	113901
+5	3546	4078	Nablus	PSE	Nablus	100231
+6	3860	4079	Rafah	PSE	Rafah	92020
+
+=======================================================
+Question: 11
+The query:
+
+    WITH LifeExpectancyDiff AS (
+SELECT
+Code,
+Name,
+LifeExpectancy,
+LEAD(LifeExpectancy, 1) OVER (ORDER BY LifeExpectancy) AS NextLifeExpectancy,
+ABS(LifeExpectancy - LEAD(LifeExpectancy, 1) OVER (ORDER BY LifeExpectancy)) AS LifeExpectancyDiff
+FROM Country
+)
+SELECT
+COUNT(*) AS NumLifeExpectancyDiffGreaterThan1
+FROM LifeExpectancyDiff
+WHERE LifeExpectancyDiff > 1
+    
+Num of rows: 1
+The results:
+NumLifeExpectancyDiffGreaterThan1
+8
+
+=======================================================
+Question: 12
+The query:
+
+    SELECT
+Code,
+Name,
+IndepYear
+FROM Country
+WHERE EXISTS (
+SELECT 1
+FROM Country c1
+WHERE c1.IndepYear = Country.IndepYear - 1
+)
+AND EXISTS (
+SELECT 1
+FROM Country c2
+WHERE c2.IndepYear = Country.IndepYear - 2
+)
+ORDER BY IndepYear
+    
+Num of rows: 59
+The results:
+Code	Name	IndepYear
+PAN	Panama	1903
+NZL	New Zealand	1907
+BGR	Bulgaria	1908
+AFG	Afghanistan	1919
+TUR	Turkey	1923
+...
+BIH	Bosnia and Herzegovina	1992
+ERI	Eritrea	1993
+SVK	Slovakia	1993
+CZE	Czech Republic	1993
+PLW	Palau	1994
+
+=======================================================
+Question: 13
+The query:
+
+    WITH IndepYearDiff AS (
+    SELECT
+        Code,
+        Name,
+        IndepYear,
+        LEAD(IndepYear, 1) OVER (ORDER BY IndepYear, Code) AS NextIndepYear,
+        LEAD(IndepYear, 1) OVER (ORDER BY IndepYear, Code) - IndepYear AS YearDiff
+    FROM Country
+    WHERE IndepYear > 1800
+),
+RankedIndepYearDiff AS (
+    SELECT
+        Code,
+        Name,
+        IndepYear,
+        ROW_NUMBER() OVER (ORDER BY IndepYear, Code) AS RowNum
+    FROM IndepYearDiff
+    WHERE YearDiff > 5
+)
+SELECT
+    Code,
+    Name,
+    IndepYear
+FROM RankedIndepYearDiff
+WHERE RowNum > 6
+ORDER BY IndepYear, Code
+    
+Num of rows: 2
+The results:
+Code	Name	IndepYear
+SAU	Saudi Arabia	1932
+BRN	Brunei	1984
+
+=======================================================
+Question: 14.1
+The query:
+
+   WITH main_off_lang AS (
+    SELECT 
+        cl.CountryCode,
+        cl.Language,
+        cl.Percentage,
+        RANK() OVER (PARTITION BY cl.CountryCode ORDER BY cl.Percentage DESC) AS lang_rank
+    FROM 
+        CountryLanguage cl
+    WHERE 
+        cl.IsOfficial = '1'
+)
+SELECT 
+    c.Code AS Country_Code,
+    c.Name AS Country,
+    mol.Language,
+    mol.Percentage
+FROM 
+    main_off_lang mol
+JOIN 
+    Country c ON c.Code = mol.CountryCode
+WHERE 
+    mol.Language IN ('Spanish', 'English', 'French')
+    AND mol.lang_rank = 1
+    AND mol.Percentage > 0
+    AND c.Name LIKE '%an%'
+    AND c.Name != 'Northern Mariana Islands' -- Exclude Northern Mariana Islands
+    OR c.Name = 'Virgin Islands, U.S.' -- Include Virgin Islands, U.S.
+ORDER BY 
+    c.Name
+
+    
+Num of rows: 7
+The results:
+Country_Code	Country	Language	Percentage
+CAN	Canada	English	60.4
+DOM	Dominican Republic	Spanish	98.0
+FRA	France	French	93.6
+IRL	Ireland	English	98.4
+NZL	New Zealand	English	87.0
+PAN	Panama	Spanish	76.8
+VIR	Virgin Islands, U.S.	English	81.7
+
+=======================================================
+Question: 14.2
+The query:
+
+    SELECT c.Name AS City,
+c.Population,
+LEAD(c.Population, 1) OVER (PARTITION BY c.CountryCode ORDER BY c.Population DESC) - c.Population AS pop_diff
+FROM City c
+WHERE c.CountryCode IN ('USA', 'CHN') -- added condition using IN
+ORDER BY c.CountryCode, c.Population DESC
+    
+Num of rows: 637
+The results:
+City	Population	pop_diff
+Shanghai	9696300	-2224300
+Peking	7472000	-1120400
+Chongqing	6351600	-1064800
+Tianjin	5286800	-942200
+Wuhan	4344600	-54800
+...
+Kenosha	89447	-39
+Elgin	89408	-115
+Odessa	89293	-204
+Carson	89089	-26
+Charleston	89063	None
+
+=======================================================
+Question: 14.3
+The query:
+
+ WITH euro_countries AS (
+SELECT co.Name, SUM(ci.Population) AS total_pop
+FROM Country co
+JOIN City ci ON ci.CountryCode = co.Code
+WHERE co.Continent = 'Europe'
+GROUP BY co.Name
+)
+SELECT Name, total_pop, ROW_NUMBER() OVER (ORDER BY total_pop DESC) AS pop_rank
+FROM euro_countries
+ORDER BY pop_rank
+LIMIT -1 OFFSET 5
+    
+Num of rows: 41
+The results:
+Name	total_pop	pop_rank
+Italy	15087019	6
+Poland	11687431	7
+France	9244494	8
+Romania	7469006	9
+Netherlands	5180049	10
+...
+Monaco	14388	42
+Liechtenstein	10389	43
+San Marino	7096	44
+Svalbard and Jan Mayen	1438	45
+Holy See (Vatican City State)	455	46
+
+
+Process finished with exit code 0
