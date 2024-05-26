@@ -1,0 +1,271 @@
+written and submitted by David Koplev 208870279 and Rotem Kashani 209073352
+C:\Users\Owner\AppData\Local\Programs\Python\Python39\python.exe C:\Users\Owner\Desktop\pythonProject1\ex5.py 
+==========================================================
+Question: 1a
+
+Query:
+
+airbnb.listingsAndReviews.aggregate([
+    {'$match': {
+        'property_type': 'House',
+        'number_of_reviews': {'$gt': 50},
+        '$or': [
+            {'beds': {'$gte': 5}},
+            {'beds': {'$lte': 2}}
+        ]
+    }},
+    {'$project': {
+        '_id': 1,
+        'beds': 1,
+        'number_of_reviews': 1,
+        'property_type': 1
+    }}
+])
+
+
+Results:
+{'_id': '16253247', 'property_type': 'House', 'beds': 0, 'number_of_reviews': 55}
+
+{'_id': '14234561', 'property_type': 'House', 'beds': 1, 'number_of_reviews': 131}
+
+{'_id': '4076976', 'property_type': 'House', 'beds': 1, 'number_of_reviews': 114}
+
+{'_id': '4430808', 'property_type': 'House', 'beds': 1, 'number_of_reviews': 179}
+
+{'_id': '8764966', 'property_type': 'House', 'beds': 1, 'number_of_reviews': 142}
+
+{'_id': '9310959', 'property_type': 'House', 'beds': 1, 'number_of_reviews': 147}
+
+{'_id': '16816601', 'property_type': 'House', 'beds': 2, 'number_of_reviews': 51}
+
+{'_id': '17438054', 'property_type': 'House', 'beds': 2, 'number_of_reviews': 72}
+
+{'_id': '17922322', 'property_type': 'House', 'beds': 2, 'number_of_reviews': 140}
+
+{'_id': '18134389', 'property_type': 'House', 'beds': 2, 'number_of_reviews': 51}
+
+
+==========================================================
+Question: 1b
+
+Query:
+
+airbnb.listingsAndReviews.aggregate([
+    { '$match': { 'room_type': 'Private room' } },
+    { '$addFields': { 'price_per_person': { '$divide': [ '$price', '$accommodates' ] } } },
+    { '$group': {
+        '_id': '$address.market',
+        'avg_price_per_person': { '$avg': '$price_per_person' },
+        'count': { '$sum': 1 }
+    }},
+    { '$match': { '_id': { '$nin': [null, ''] } } },
+    { '$sort': { 'avg_price_per_person': -1 } },
+    { '$limit': 5 }
+])
+
+
+Results:
+{'_id': 'Hong Kong', 'avg_price_per_person': Decimal128('304.3324107501002807862013638186923'), 'count': 277}
+
+{'_id': 'Other (International)', 'avg_price_per_person': Decimal128('257.0833333333333333333333333333334'), 'count': 2}
+
+{'_id': 'Istanbul', 'avg_price_per_person': Decimal128('248.7214541906506192220477934763649'), 'count': 364}
+
+{'_id': 'Rio De Janeiro', 'avg_price_per_person': Decimal128('115.1787759275489336839030090563833'), 'count': 163}
+
+{'_id': 'Kauai', 'avg_price_per_person': Decimal128('70.19318181818181818181818181818182'), 'count': 11}
+
+
+==========================================================
+Question: 1c
+
+Query:
+
+airbnb.listingsAndReviews.aggregate([
+    { '$unwind': '$reviews' },
+    { '$group': {
+        '_id': '$reviews.reviewer_id',
+        'count': { '$sum': 1 }
+    }},
+    { '$sort': { 'count': -1 } },
+    { '$limit': 5 },
+    { '$sort': { 'count': 1 } }  
+])
+
+
+Results:
+{'_id': '162027327', 'count': 9}
+
+{'_id': '20991911', 'count': 9}
+
+{'_id': '2961855', 'count': 10}
+
+{'_id': '67084875', 'count': 13}
+
+{'_id': '20775242', 'count': 24}
+
+
+==========================================================
+Question: 2a
+
+Query:
+
+mflix.comments.aggregate([
+    {
+        '$group': {
+            '_id': '$movie_id',
+            'num_comments': {'$sum': 1}
+        }
+    },
+    {
+        '$sort': {'num_comments': -1}
+    },
+    {
+        '$limit': 5
+    },
+    {
+        '$lookup': {
+            'from': 'movies',
+            'localField': '_id',
+            'foreignField': '_id',
+            'as': 'movieInfo'
+        }
+    },
+    {
+        '$unwind': '$movieInfo'
+    },
+    {
+        '$project': {
+            '_id': 1,
+            'title': '$movieInfo.title',
+            'year': '$movieInfo.year',
+            'num_comments': 1
+        }
+    }
+])
+
+
+Results:
+{'_id': ObjectId('573a13bff29313caabd5e91e'), 'num_comments': 161, 'title': 'The Taking of Pelham 1 2 3', 'year': 2009}
+
+{'_id': ObjectId('573a13b3f29313caabd3b647'), 'num_comments': 158, 'title': 'Terminator Salvation', 'year': 2009}
+
+{'_id': ObjectId('573a13a5f29313caabd159a9'), 'num_comments': 158, 'title': 'About a Boy', 'year': 2002}
+
+{'_id': ObjectId('573a13a3f29313caabd0d1e3'), 'num_comments': 158, 'title': "Ocean's Eleven", 'year': 2001}
+
+{'_id': ObjectId('573a13abf29313caabd25582'), 'num_comments': 158, 'title': '50 First Dates', 'year': 2004}
+
+
+==========================================================
+Question: 2b
+
+Query:
+
+db.movies.aggregate([
+    {'$match': {'imdb.votes': {'$exists': True, '$ne': 0}}},
+    {'$unwind': '$directors'},
+    {'$group': {
+        '_id': '$directors', 
+        'avg_rating': {'$avg': '$imdb.rating'},
+        'movies_count': {'$sum': 1}
+    }},
+    {'$match': {
+        'avg_rating': {'$gt': 7},
+        'movies_count': {'$gte': 5}
+    }},
+    {'$sort': {'avg_rating': -1}}
+])
+
+
+Results:
+{'_id': 'Rocco Urbisci', 'avg_rating': 8.459999999999999, 'movies_count': 5}
+
+{'_id': 'Christopher Nolan', 'avg_rating': 8.344444444444443, 'movies_count': 9}
+
+{'_id': 'Frank Darabont', 'avg_rating': 8.24, 'movies_count': 5}
+
+{'_id': 'Don Hertzfeldt', 'avg_rating': 8.24, 'movies_count': 5}
+
+{'_id': 'Stanley Kubrick', 'avg_rating': 8.175, 'movies_count': 8}
+
+{'_id': 'Asghar Farhadi', 'avg_rating': 8.08, 'movies_count': 5}
+
+{'_id': 'Chuck Jones', 'avg_rating': 8.066666666666666, 'movies_count': 6}
+
+{'_id': 'Hayao Miyazaki', 'avg_rating': 8.052941176470588, 'movies_count': 17}
+
+{'_id': 'Satyajit Ray', 'avg_rating': 8.042857142857143, 'movies_count': 14}
+
+{'_id': 'Majid Majidi', 'avg_rating': 8.025, 'movies_count': 8}
+
+
+==========================================================
+Question: 3a
+
+Query:
+
+supplies.sales.aggregate([
+    {"$unwind": "$items"},
+    {"$group": {
+        "_id": "$items.name",
+        "average_price": {"$avg": "$items.price"}
+    }},
+    {"$sort": {"average_price": -1}}
+])
+
+
+Results:
+{'_id': 'laptop', 'average_price': Decimal128('992.1520079260237780713342140026420')}
+
+{'_id': 'backpack', 'average_price': Decimal128('118.4083412732784755305326981377220')}
+
+{'_id': 'pens', 'average_price': Decimal128('42.23900636104408861592454485632814')}
+
+{'_id': 'printer paper', 'average_price': Decimal128('30.26948352626892252894033837934105')}
+
+{'_id': 'notepad', 'average_price': Decimal128('22.42540454016298020954598370197905')}
+
+{'_id': 'binder', 'average_price': Decimal128('20.02741873396065012831479897348161')}
+
+{'_id': 'envelopes', 'average_price': Decimal128('15.02021975582685904550499445061043')}
+
+
+==========================================================
+Question: 3b
+
+Query:
+
+supplies.sales.aggregate([
+    {"$unwind": "$items"},
+    {"$unwind": "$items.tags"},
+    {"$group": {
+        "_id": "$items.tags",
+        "total_quantity_sold": {"$sum": "$items.quantity"}
+    }},
+    {"$sort": {"total_quantity_sold": -1}}
+])
+
+
+Results:
+{'_id': 'office', 'total_quantity_sold': 78456}
+
+{'_id': 'school', 'total_quantity_sold': 73697}
+
+{'_id': 'stationary', 'total_quantity_sold': 50936}
+
+{'_id': 'general', 'total_quantity_sold': 50571}
+
+{'_id': 'writing', 'total_quantity_sold': 34493}
+
+{'_id': 'organization', 'total_quantity_sold': 25493}
+
+{'_id': 'travel', 'total_quantity_sold': 6918}
+
+{'_id': 'kids', 'total_quantity_sold': 6918}
+
+{'_id': 'electronics', 'total_quantity_sold': 6793}
+
+
+
+Process finished with exit code 0
