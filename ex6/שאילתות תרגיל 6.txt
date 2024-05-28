@@ -1,0 +1,33 @@
+written and submitted by David Koplev 208870279 and Rotem Kashani 209073352
+--q1a--
+MATCH (u:User) - [:WATCHED] --> (m:Movie)
+WHERE u.state = 'Ohio' AND toLower(m.title) CONTAINS 'and' AND m.year > 2010
+RETURN u, m
+
+--q1b--
+MATCH (u:User) - [:WATCHED] --> (m:Movie) - [:HAS] --> (g:Genre)
+WHERE u.state = 'Virginia'
+WITH g.name AS genre, COUNT(DISTINCT u) AS viewerCount
+RETURN genre, viewerCount
+ORDER BY viewerCount DESC
+
+--q1c--
+MATCH (u1:User) - [:USES] --> (ip:IpAddress) <-- [:USES] - (u2:User)
+WHERE u1.state <> u2.state
+RETURN u1, u2, ip
+
+--q1d--
+MATCH path = (u1:User {firstName: 'Flo'}) - [r: WATCHED|HAS*6] - (u2:User {firstName: 'Cam'})
+RETURN path
+
+--q2a--
+MATCH (c:Crime)
+WITH c.type AS crimeType, COUNT(c) AS count
+RETURN crimeType, count
+ORDER BY count DESC
+
+--q2b--
+MATCH (a:Area) <-- [:LOCATION_IN_AREA] – (l:Location) <-- [:OCCURRED_AT] – (c:Crime)
+WITH a.areaCode AS area, c.type AS crimeType, COUNT(c) AS count
+RETURN area, crimeType, count
+ORDER BY count DESC
