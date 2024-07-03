@@ -1,8 +1,0 @@
-duckdb
-pandas
-streamlit
-matplotlib
-numpy
-# sqlite3 is part of the Python standard library
-plotly
-faker
